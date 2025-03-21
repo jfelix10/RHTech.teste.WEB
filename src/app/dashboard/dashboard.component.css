@@ -1,0 +1,150 @@
+.sidebar {
+  position: absolute;
+  height: 100%;
+  width: 0;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #dacaca;
+  display: block;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+a:hover {
+  color: #f1f1f1;
+}
+
+.sidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+.sidebar h6 {
+  font-size: 0.9rem; /* Ajusta o tamanho dos títulos */
+  text-transform: uppercase; /* Adiciona destaque com letras maiúsculas */
+}
+
+.sidebar .nav-link {
+  font-size: 0.85rem; /* Reduz o tamanho dos links */
+}
+
+.sidebar .nav-link i {
+  font-size: 0.75rem; /* Reduz ainda mais os ícones */
+}
+
+.btn-tab {
+  z-index: 5;
+  position: absolute !important;
+  width: 15px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 0px 25px 25px 0px;
+}
+
+.btn-tab:hover {
+  background-color: #111;
+}
+
+.btn-tab-open {
+  transition: margin-left .5s;
+  padding: 16px;
+  margin-left: 250px;
+}
+
+.btn-tab-close {
+  transition: margin-left .5s;
+  padding: 16px;
+  margin-left: 0px;
+}
+
+.navbar {
+  position: relative;
+}
+
+.main {
+  /* border: 2px solid red; */
+  position:fixed !important;
+}
+
+.mainOpen {
+  transition: margin-left .5s;
+  padding: 16px;
+  margin-left: 250px;
+}
+
+.mainClose {
+  transition: margin-left .5s;
+  padding: 16px;
+  margin-left: 0px;
+}
+
+.openSideBar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0px !important;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+
+  width: 250px;
+}
+
+.closeSideBar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0px !important;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+
+  width: 0px;
+  
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .openSideBar {
+      padding-top: 15px;
+  }
+
+  .openSideBar a {
+      font-size: 18px;
+  }
+
+  .closeSideBar {
+      padding-top: 15px;
+  }
+
+  .closeSideBar a {
+      font-size: 18px;
+  }
+}

@@ -1,0 +1,191 @@
+<div class="d-flex vh-100" *ngIf="userRole !== 'Admin'">
+    <!-- Metade Esquerda -->
+    <div class="w-50 d-flex flex-column justify-content-center align-items-start p-5">
+        <h1 class="mb-4">Olá, {{ firstName }}. Seja bem-vindo.</h1>
+
+        <p class="mb-4">
+            É necessário configurar a empresa matriz para visualizar todas as informações do sistema.
+        </p>
+        <button class="btn btn-primary" (click)="modalService.open('modal-1'); setEmail()">Iniciar Configuração</button>
+    </div>
+
+    <!-- Metade Direita -->
+    <!-- <div class="w-50"
+        style="background: url('../../../public/diferenciais-servicos.webp') no-repeat center center; background-size: cover;">
+    </div> -->
+</div>
+
+<div class="container py-4" *ngIf="userRole == 'Admin'">
+    <!-- Título -->
+    <h2 class="text-primary mb-4">EMPRESA</h2>
+  
+    <!-- Botões de Ação -->
+    <div class="d-flex justify-content-start gap-3 mb-4">
+      <button class="btn btn-outline-primary">
+          Editar Empresa
+          <i class="fa fa-pencil me-2"></i> 
+      </button>
+      <button class="btn btn-outline-primary">
+          Gestão de Filiais
+          <i class="fa fa-sitemap me-2"></i> 
+      </button>
+      <button class="btn btn-outline-primary">
+          Faixas Salariais
+          <i class="fa fa-credit-card me-2"></i> 
+      </button>
+      <button class="btn btn-outline-primary">
+          Job Level
+          <i class="fa fa-user me-2"></i> 
+      </button>
+    </div>
+  
+    <!-- Informações da Empresa -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <!-- Primeira Linha -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">Nome da Empresa</p>
+            <p>{{ empresaData.NomeEmpresa }}</p>
+          </div>
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">CNPJ da Empresa</p>
+            <p>{{ empresaData.CNPJ }}</p>
+          </div>
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">Nome do Administrador</p>
+            <p>{{ empresaData.NomeAdministradorEmpresa }}</p>
+          </div>
+        </div>
+  
+        <!-- Segunda Linha -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">CPF do Administrador</p>
+            <p>{{ empresaData.CPF }}</p>
+          </div>
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">Email</p>
+            <p>{{ empresaData.Email }}</p>
+          </div>
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">Telefone</p>
+            <p>{{ empresaData.Celular }}</p>
+          </div>
+        </div>
+  
+        <!-- Terceira Linha -->
+        <div class="row">
+          <div class="col-md-4">
+            <p class="mb-1 fw-bold">CEP</p>
+            <p>{{ empresaData.CEP }}</p>
+          </div>
+          <div class="col-md-8">
+            <p class="mb-1 fw-bold">Endereço</p>
+            <p>{{ empresaData.Endereco }}, {{ empresaData.Cidade }} - {{ empresaData.Estado }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<modal id="modal-1">
+    <div class="modal-header">
+        <h5 class="modal-title">Cadastro empresa matriz</h5>
+        <button type="button" class="btn-close" (click)="modalService.close();"></button>
+    </div>
+    <div class="modal-body">
+
+        <form #empresaForm="ngForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="tipoEmpresa" class="form-label">Tipo de Empresa</label>
+                    <select class="form-select" id="tipoEmpresa" [(ngModel)]="form.codTipoEmpresa" name="CodTipoEmpresa"
+                        required>
+                        <option *ngFor="let tipo of tiposEmpresa" [value]="tipo.codtipoempresa">{{
+                            tipo.nometipoempresa }}</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="nomeEmpresa" class="form-label">Nome da Empresa</label>
+                    <input type="text" class="form-control" id="nomeEmpresa" [(ngModel)]="form.nomeEmpresa"
+                        name="NomeEmpresa" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cnpj" class="form-label">CNPJ</label>
+                    <input type="text" class="form-control" id="cnpj" [(ngModel)]="form.cnpj" name="CNPJ" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cep" class="form-label">CEP</label>
+                    <input type="text" class="form-control" id="cep" (blur)="getEndereco()" [(ngModel)]="form.cep" name="CEP" required>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label for="logradouro" class="form-label">Logradouro</label>
+                    <input type="text" class="form-control" id="logradouro" [(ngModel)]="form.logradouro" name="Logradouro"
+                        required>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label for="endereco" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" id="endereco" [(ngModel)]="form.endereco" name="Endereco"
+                        required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="bairro" class="form-label">Bairro</label>
+                    <input type="text" class="form-control" id="bairro" [(ngModel)]="form.bairro" name="Bairro"
+                        required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cidade" class="form-label">Cidade</label>
+                    <input type="text" class="form-control" id="cidade" [(ngModel)]="form.cidade" name="Cidade"
+                        required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-select" id="estado" [(ngModel)]="form.estado" name="Estado" required>
+                        <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label for="complemento" class="form-label">Complemento</label>
+                    <input type="text" class="form-control" id="complemento" [(ngModel)]="form.complemento"
+                        name="Complemento">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="celular" class="form-label">Celular</label>
+                    <input type="text" class="form-control" id="celular" [(ngModel)]="form.celular" name="Celular"
+                        required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="nomeAdm" class="form-label">Nome do Administrador</label>
+                    <input type="text" class="form-control" id="nomeAdm" [(ngModel)]="form.nomeAdministradorEmpresa"
+                        name="NomeAdministradorEmpresa" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="cpf" [(ngModel)]="form.cpf" name="CPF" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="email" [(ngModel)]="form.email" name="Email" required>
+                </div>
+            </div>
+        </form>
+    </div>    
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveEmpresa()">Salvar</button>
+        <button type="button" class="btn btn-secondary" (click)="modalService.close();">Fechar</button>
+    </div>
+</modal>

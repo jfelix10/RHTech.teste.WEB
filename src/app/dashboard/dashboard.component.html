@@ -1,0 +1,114 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Empresa</a>
+        <div class="d-flex align-items-center">
+            <i class="bi bi-person-circle fs-4">Ícone Usuário</i>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div [class]="closeOpenSideBar" class="sidebar">
+        <!-- Sessão: EMPRESA -->
+        <br>
+        <br>
+        <br>
+        <div class="mb-3">
+            <h6 class="text-primary fw-bold small">EMPRESA</h6>
+            <ul class="nav flex-column">
+                <!-- Configuração da Empresa -->
+                <li class="nav-item">
+                    <a class="nav-link small py-1" data-bs-toggle="collapse" href="#configEmpresaMenu" role="button"
+                        aria-expanded="false" aria-controls="configEmpresaMenu">
+                        <i class="fa fa-building me-2 fa-sm"></i> Config. da empresa
+                    </a>
+                    <div class="collapse ps-2" id="configEmpresaMenu">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link small py-1" routerLink="minha-empresa">Minha Empresa</a>
+                            </li>
+                            <li *ngIf="userRole == 'Admin'" class="nav-item">
+                                <a class="nav-link small py-1" routerLink="beneficios">Benefícios</a>
+                            </li>
+                            <li *ngIf="userRole == 'Admin'" class="nav-item">
+                                <a class="nav-link small py-1">Áreas</a>
+                            </li>
+                            <li *ngIf="userRole == 'Admin'" class="nav-item">
+                                <a class="nav-link small py-1" routerLink="cargos">Cargos</a>
+                            </li>
+                            <li *ngIf="userRole == 'Admin'" class="nav-item">
+                                <a class="nav-link small py-1">Filiais</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Configuração de Sistema -->
+                <li *ngIf="userRole == 'Admin'" class="nav-item">
+                    <a class="nav-link small py-1" data-bs-toggle="collapse" href="#configSistemaMenu" role="button"
+                        aria-expanded="false" aria-controls="configSistemaMenu">
+                        <i class="fa fa-th-large me-2 fa-sm"></i> Config. de sistema
+                    </a>
+                    <div class="collapse ps-2" id="configSistemaMenu">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link small py-1">Usuários</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link small py-1">Permissões</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link small py-1">Preferências</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Sessão: VAGAS -->
+        <div *ngIf="userRole == 'Admin'" class="mb-3">
+            <h6 class="text-primary fw-bold small">VAGAS</h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link small py-1">
+                        <i class="fa fa-users me-2 fa-sm"></i> Gestão de Vagas
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Sessão: USUÁRIOS -->
+        <div *ngIf="userRole == 'Admin'">
+            <h6 class="text-primary fw-bold small">USUÁRIOS</h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link small py-1">
+                        <i class="fa fa-user me-2 fa-sm"></i> Meu Perfil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link small py-1" routerLink="todos-usuarios">
+                        <i class="fa fa-users me-2 fa-sm"></i> Todos os Usuários
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+    </div>
+    <!-- FIM SIDEBAR -->
+    <div>
+        <button [class]="btnCloseOpen" (click)="openCloseNav()"> {{ seta }} </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid main">
+        <div [class]="mainCloseOpen">
+            <div class="p-2">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+</div>
