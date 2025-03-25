@@ -5,6 +5,17 @@
     <div *ngIf="errorMessage" class="alert alert-danger">
       {{ errorMessage }}
     </div>
+
+    <div *ngIf="serverMessage" class="alert alert-success" role="alert">
+      {{ serverMessage }}
+    </div>
+    
+    <!-- Mensagens de Erro -->
+    <div *ngIf="serverErrors.length > 0" class="alert alert-danger" role="alert">
+      <ul class="mb-0">
+        <li *ngFor="let error of serverErrors">{{ error }}</li>
+      </ul>
+    </div>
   
     <!-- Tabela de Usuários -->
     <table class="table table-bordered table-striped mt-3" *ngIf="users.length > 0">
@@ -18,45 +29,187 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users; let i = index">
+        <tr *ngFor="let user of users; let i = index" [class.table-secondary]="!user.ativo">
           <td>{{ i + 1 }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.role }}</td>
           <td>
-            <button class="btn btn-info btn-sm me-2" (click)="modalService.open('edit-user-modal')">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Excluir</button>
+            <!-- Botão Editar -->
+            <button
+              class="btn btn-info btn-sm me-2"
+              (click)="modalService.open('edit-user-modal'); setSelectedUserId(user);">
+              Editar
+            </button>
+            
+            <!-- Botão Excluir -->
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="deleteUser(user.id)">
+              Excluir
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
-  
+    
     <!-- Mensagem caso não existam usuários -->
     <p *ngIf="users.length === 0 && !errorMessage" class="text-muted">Nenhum usuário encontrado.</p>
+    
+    <div class="row">
+      <button class="btn btn-primary btn-sm me-2" (click)="modalService.open('add-user-modal');">Adicionar Usuário</button>
+    </div>
   </div>
 
+  <modal id="add-user-modal">
+    <div class="modal-header">
+      <h5 class="modal-title">Adicionar Usuário</h5>
+      <button type="button" class="btn-close" (click)="modalService.close();"></button>
+    </div>
+    <div class="modal-body">
+      <!-- Mensagens de Erro do Servidor -->
+      <div *ngIf="serverErrors.length > 0" class="alert alert-danger" role="alert">
+        <ul class="mb-0">
+          <li *ngFor="let error of serverErrors">{{ error }}</li>
+        </ul>
+      </div>
+  
+      <form #newUserForm="ngForm" novalidate>
+        <!-- Nome -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Nome</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="formAddUser.name"
+            class="form-control"
+            required
+            [ngClass]="{'is-invalid': newUserForm.submitted && newUserForm.controls['name'].invalid}" />
+          <div class="invalid-feedback" *ngIf="newUserForm.submitted && newUserForm.controls['name']?.invalid">
+            Nome é obrigatório.
+          </div>
+        </div>
+  
+        <!-- E-mail -->
+        <div class="mb-3">
+          <label for="email" class="form-label">E-mail</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="formAddUser.email"
+            class="form-control"
+            required
+            email
+            [ngClass]="{'is-invalid': newUserForm.submitted && newUserForm.controls['email'].invalid}" />
+          <div class="invalid-feedback" *ngIf="newUserForm.submitted && newUserForm.controls['email']?.invalid">
+            <span *ngIf="newUserForm.controls['email']?.errors?.['required']">E-mail é obrigatório.</span>
+            <span *ngIf="newUserForm.controls['email']?.errors?.['email']">Digite um e-mail válido.</span>
+          </div>
+        </div>
+  
+        <!-- Senha Inicial -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Senha Inicial</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="formAddUser.password"
+            class="form-control"
+            [validateEqual]="'confirmPassword'"
+            required
+            minlength="5"
+            [ngClass]="{'is-invalid': newUserForm.submitted && newUserForm.controls['password'].hasError('passwordMismatch')}" />
+          <div class="invalid-feedback" *ngIf="newUserForm.submitted && newUserForm.controls['password']?.hasError('passwordMismatch')">
+            <span *ngIf="newUserForm.controls['password']?.errors?.['required']">Senha é obrigatória.</span>
+            <span *ngIf="newUserForm.controls['password']?.errors?.['minlength']">Senha deve ter pelo menos 5 caracteres.</span>
+            <span *ngIf="newUserForm.controls['password']?.hasError('passwordMismatch')">as senhas não conferem.</span>
+          </div>
+        </div>
+  
+        <!-- Confirma Senha -->
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirma Senha Inicial</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="formAddUser.confirmPassword"
+            class="form-control"
+            [validateEqual]="'password'"
+            required
+            [ngClass]="{'is-invalid': newUserForm.submitted && newUserForm.controls['confirmPassword'].hasError('passwordMismatch')}" />
+          <div class="invalid-feedback" *ngIf="newUserForm.submitted && newUserForm.controls['confirmPassword']?.hasError('passwordMismatch')">
+            As senhas não conferem! Confirmação da senha é obrigatória.
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="addUser(newUserForm)">Salvar</button>
+      <button type="button" class="btn btn-secondary" (click)="modalService.close();">Fechar</button>
+    </div>
+  </modal>
+  
+  
+
+
+  <!-- MODAL EDIÇÃO USUARIO -->
   <modal id="edit-user-modal">
     <div class="modal-header">
       <h5 class="modal-title">Editar Usuário</h5>
       <button type="button" class="btn-close" (click)="modalService.close();"></button>
     </div>
     <div class="modal-body">
-      <form #userForm="ngForm">
+      <!-- Mensagens de Erro do Servidor -->
+      <div *ngIf="serverErrors.length > 0" class="alert alert-danger" role="alert">
+        <ul class="mb-0">
+          <li *ngFor="let error of serverErrors">{{ error }}</li>
+        </ul>
+      </div>
+  
+      <form #editUserForm="ngForm" novalidate>
+        <!-- Nome -->
         <div class="mb-3">
           <label for="name" class="form-label">Nome</label>
-          <input *ngIf="selectedUser" type="text" id="name" class="form-control" [(ngModel)]="selectedUser.name" name="name" required />
+          <input
+            *ngIf="selectedUser"
+            type="text"
+            id="name_edit"
+            name="name_edit"
+            [(ngModel)]="selectedUser.name"
+            class="form-control"
+            required
+            [ngClass]="{'is-invalid': editUserForm.submitted && editUserForm.controls['name_edit'].invalid}" />
+          <div class="invalid-feedback" *ngIf="editUserForm.submitted && editUserForm.controls['name_edit']?.invalid">
+            Nome é obrigatório.
+          </div>
         </div>
+  
+        <!-- Função -->
         <div class="mb-3">
           <label for="role" class="form-label">Função</label>
-          <select *ngIf="selectedUser" id="role" class="form-select" [(ngModel)]="selectedUser.role" name="role" required>
+          <select
+            *ngIf="selectedUser"
+            id="role"
+            name="role"
+            [(ngModel)]="selectedUser.role"
+            class="form-select"
+            required
+            [ngClass]="{'is-invalid': editUserForm.submitted && editUserForm.controls['role'].invalid}">
             <option value="Admin">Admin</option>
             <option value="Pending">Pending</option>
           </select>
+          <div class="invalid-feedback" *ngIf="editUserForm.submitted && editUserForm.controls['role']?.invalid">
+            Função é obrigatória.
+          </div>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="saveUser()">Salvar</button>
+      <button type="button" class="btn btn-primary" (click)="saveUser(editUserForm)">Salvar</button>
       <button type="button" class="btn btn-secondary" (click)="modalService.close();">Fechar</button>
     </div>
   </modal>

@@ -9,10 +9,14 @@ import { switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { RoleService } from '../services/role.service';
 import { EnderecoService } from '../services/endereco.service';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-minha-empresa',
-  imports: [ModalComponent, FormsModule, CommonModule],
+  imports: [ModalComponent, FormsModule, CommonModule, NgxMaskDirective],
+  providers: [
+    provideNgxMask(),
+  ],
   templateUrl: './minha-empresa.component.html',
   styleUrl: './minha-empresa.component.css'
 })
@@ -22,6 +26,7 @@ export class MinhaEmpresaComponent implements OnInit {
   isOpenModal = false;
   payload: any;
   tiposEmpresa = [
+    { codtipoempresa: '', nometipoempresa: 'Selecione um tipo de empresa'},
     { codtipoempresa: 1, nometipoempresa: 'MEI' },
     { codtipoempresa: 2, nometipoempresa: 'LTDA' },
     { codtipoempresa: 3, nometipoempresa: 'EIRELI' }
@@ -30,7 +35,7 @@ export class MinhaEmpresaComponent implements OnInit {
   form = {
     nomeEmpresa: '',
     cnpj: '',
-    codTipoEmpresa: 0,
+    codTipoEmpresa: '',
     cep: '',
     logradouro: '',
     endereco: '',
@@ -97,12 +102,12 @@ export class MinhaEmpresaComponent implements OnInit {
   }
 
   // Salvar os dados da empresa na API
-  saveEmpresa(): void {
-    if (!this.form.codTipoEmpresa || !this.form.nomeEmpresa || !this.form.cnpj) {
-      alert('Preencha os campos obrigatórios antes de salvar.');
+  saveEmpresa(empresaForm: any): void {
+    empresaForm.onSubmit(null);
+    if (empresaForm.invalid) {
+      console.log("EMPRESA FORM:", empresaForm);
       return;
     }
-
     this.empresaService.criarEmpresa(this.form)
       .pipe(
         switchMap((response) => {

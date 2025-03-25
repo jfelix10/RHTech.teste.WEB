@@ -10,12 +10,16 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
+  addUser(userPayload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/add-user`, {...userPayload });
+  }
+  
   getAllUsers(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/get-users`);
   }
 
   deleteUser(userId: string): Observable<any> {
-    return this.http.put(`${this.baseUrl}/delete-user/${userId}`, null);
+    return this.http.delete(`${this.baseUrl}/delete-user/${userId}`);
   }
 
   updateUser(userId: string, userUpdates: { name: string; role: string }): Observable<any> {

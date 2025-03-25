@@ -3,10 +3,12 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ValidateEqualDirective } from '../commons/directives/validate-equal.directive';
+import { EmailValidatorDirective } from '../commons/directives/email-validator.directive';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, ValidateEqualDirective, EmailValidatorDirective],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -23,26 +25,25 @@ export class LoginComponent {
     confirmNewPassword: ''
   };
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {
+    this.resetForm();
+   }
 
   // Alterna entre os modos Cadastro e Login
   toggleMode(): void {
     this.isLoginMode = !this.isLoginMode;
-    this.resetForm(); // Limpa os campos ao alternar entre os modos
+    this.resetForm();
   }
 
   // Lógica ao enviar o formulário
-  onSubmit(): void {
+  onSubmit(userForm: any): void {
+    if (userForm.invalid) {
+      return;
+    }
+
+    //Modo Cadastro
     if (!this.isLoginMode) 
     {
-      // Modo Cadastro
-      if (this.form.password !== this.form.confirmPassword) {
-        alert('As senhas não conferem!');
-        return;
-      }
-
-      console.log("form:", this.form);
-
       this.authService.register(this.form.name, this.form.email, this.form.password)
       .subscribe({
         next: (response) => {
@@ -59,9 +60,7 @@ export class LoginComponent {
       });
     }
     else if(this.primeiroAcesso)
-    {
-      alert(this.form.name +" || "+ this.form.email+" || "+this.form.password);
-      
+    {      
       this.authService.register(this.form.name, this.form.email, this.form.password)
       .subscribe({
         next: (response) => {

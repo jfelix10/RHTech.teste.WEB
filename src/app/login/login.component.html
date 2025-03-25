@@ -2,7 +2,7 @@
     <!-- Card que contém o formulário -->
     <div class="card shadow-lg p-4 w-100" style="max-width: 400px;">
       <h3 class="text-center mb-4">{{ isLoginMode ? 'Login' : 'Cadastro Inicial' }}</h3>
-      <form (ngSubmit)="onSubmit()">
+      <form #userForm="ngForm" novalidate (ngSubmit)="onSubmit(userForm)">
         <!-- Nome Completo (visível apenas no modo Cadastro) -->
         <div *ngIf="!isLoginMode || primeiroAcesso" class="mb-3">
           <label for="fullName" class="form-label">Nome Completo</label>
@@ -13,9 +13,12 @@
             [(ngModel)]="form.name"
             class="form-control"
             required
-          />
+            [ngClass]="{'is-invalid': userForm.submitted && userForm.controls['fullName'].invalid}" />
+          <div class="invalid-feedback" *ngIf="userForm.submitted && userForm.controls['fullName']?.invalid">
+            Nome completo é obrigatório.
+          </div>
         </div>
-  
+    
         <!-- E-mail -->
         <div *ngIf="!primeiroAcesso" class="mb-3">
           <label for="email" class="form-label">E-mail</label>
@@ -26,9 +29,14 @@
             [(ngModel)]="form.email"
             class="form-control"
             required
-          />
+            validateEmail
+            [ngClass]="{'is-invalid': userForm.submitted && userForm.controls['email'].invalid}" />
+            <div class="invalid-feedback" *ngIf="userForm.submitted && userForm.controls['email']?.invalid">
+              <span *ngIf="userForm.controls['email']?.errors?.['required']">E-mail é obrigatório.</span>
+              <span *ngIf="userForm.controls['email']?.errors?.['invalidEmail']">Digite um e-mail válido.</span>
+            </div>
         </div>
-  
+    
         <!-- Senha -->
         <div *ngIf="!primeiroAcesso" class="mb-3">
           <label for="password" class="form-label">Senha</label>
@@ -38,12 +46,35 @@
             name="password"
             [(ngModel)]="form.password"
             class="form-control"
+            [validateEqual]="'confirmPassword'"
             required
             minlength="5"
-          />
+            [ngClass]="{'is-invalid': userForm.submitted && userForm.controls['password'].hasError('passwordMismatch')}" />
+          <div class="invalid-feedback" *ngIf="userForm.submitted && userForm.controls['password']?.hasError('passwordMismatch')">
+            <span *ngIf="userForm.controls['password']?.errors?.['required']">Senha é obrigatória.</span>
+            <span *ngIf="userForm.controls['password']?.errors?.['minlength']">Senha deve ter pelo menos 5 caracteres.</span>
+            <span *ngIf="userForm.controls['password']?.hasError('passwordMismatch')">as senhas não conferem.</span>
+          </div>
         </div>
 
-        <!-- Senha -->
+        <!-- Confirma Senha -->
+        <div *ngIf="!isLoginMode" class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirma Senha</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="form.confirmPassword"
+            class="form-control"
+            [validateEqual]="'password'"
+            required
+            [ngClass]="{'is-invalid': userForm.submitted && userForm.controls['confirmPassword'].hasError('passwordMismatch')}" />
+          <div class="invalid-feedback" *ngIf="userForm.submitted && userForm.controls['confirmPassword']?.hasError('passwordMismatch')">
+            As senhas não conferem! Confirmação da senha é obrigatória.
+          </div>
+        </div>
+    
+        <!-- Nova Senha -->
         <div *ngIf="primeiroAcesso" class="mb-3">
           <label for="password" class="form-label">Nova Senha</label>
           <input
@@ -54,10 +85,14 @@
             class="form-control"
             required
             minlength="5"
-          />
+            [ngClass]="{'is-invalid': userForm.submitted && userForm.controls['password'].invalid}" />
+          <div class="invalid-feedback" *ngIf="userForm.submitted && userForm.controls['password']?.invalid">
+            <span *ngIf="userForm.controls['password']?.errors?.['required']">Senha é obrigatória.</span>
+            <span *ngIf="userForm.controls['password']?.errors?.['minlength']">Senha deve ter pelo menos 5 caracteres.</span>
+          </div>
         </div>
-
-        <!-- Confirma Senha (visível apenas no modo Cadastro) -->
+    
+        <!-- Confirma Nova Senha -->
         <div *ngIf="primeiroAcesso" class="mb-3">
           <label for="confirmPassword" class="form-label">Confirma Nova Senha</label>
           <input
@@ -67,28 +102,18 @@
             [(ngModel)]="form.confirmNewPassword"
             class="form-control"
             required
-          />
+            [ngClass]="{'is-invalid': userForm.submitted && userForm.controls['confirmPassword'].invalid}" />
+          <span class="invalid-feedback" *ngIf="userForm.submitted && userForm.controls['confirmPassword']?.invalid">
+            Confirmação da nova senha é obrigatória.
+          </span>
         </div>
-  
-        <!-- Confirma Senha (visível apenas no modo Cadastro) -->
-        <div *ngIf="!isLoginMode" class="mb-3">
-          <label for="confirmPassword" class="form-label">Confirma Senha</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            [(ngModel)]="form.confirmPassword"
-            class="form-control"
-            required
-          />
-        </div>
-  
+    
         <!-- Botão de Ação -->
         <button type="submit" class="btn btn-primary w-100">
           {{ isLoginMode ? 'Login' : 'Cadastrar' }}
         </button>
       </form>
-  
+    
       <!-- Texto para alternar entre Cadastro e Login -->
       <p class="text-center mt-3">
         <a href="#" (click)="toggleMode()" class="text-primary text-decoration-none">
@@ -96,5 +121,6 @@
         </a>
       </p>
     </div>
+    
   </div>
   

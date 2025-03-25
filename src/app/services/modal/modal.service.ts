@@ -34,7 +34,6 @@ export class ModalService {
     close() {
       // close the modal that is currently open
       const modal = this.modals.find(x => x.isOpen);
-      console.log('SERVIÇO FECHAR MODAL: ', this.modals);
       modal?.close();
     }
 }
